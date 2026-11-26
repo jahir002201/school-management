@@ -6,10 +6,10 @@ export const registerValidation = z.object({
     email: z.string().email(),
 
     password: z.string().min(8)
-});
+}).strict();
 
 export const loginValidation = z.object({
     email: z.string().email(),
 
     password: z.string().min(8)
-});
+}).strict();

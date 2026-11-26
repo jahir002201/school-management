@@ -27,8 +27,17 @@ const migrate = async () => {
                 phone VARCHAR(20),
                 address TEXT,
                 avatar TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+        `);
+
+
+        // Add updated_at column to profiles table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE profiles
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 3. Students Table
@@ -41,8 +50,18 @@ const migrate = async () => {
                 date_of_birth DATE,
                 guardian_name VARCHAR(100),
                 guardian_phone VARCHAR(20),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+        `);
+
+        // Add updated_at column to students table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE students
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 4. Teachers Table
@@ -54,8 +73,16 @@ const migrate = async () => {
                 employee_no VARCHAR(50) UNIQUE NOT NULL,
                 qualification VARCHAR(150),
                 hire_date DATE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+        `);
+
+        // Add updated_at column to teachers table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE teachers
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 5. Classes Table
@@ -68,8 +95,18 @@ const migrate = async () => {
                 teacher_id INTEGER REFERENCES teachers(id)
                     ON DELETE SET NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(name, section, academic_year)
             );
+        `);
+
+        // Add updated_at column to classes table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE classes
+            ADD COLUMN IF NOT EXISTS created_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 6. Subjects Table
@@ -80,8 +117,16 @@ const migrate = async () => {
                 class_id INTEGER NOT NULL
                     REFERENCES classes(id) ON DELETE CASCADE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(name, class_id)
             );
+        `);
+
+        // Add updated_at column to subjects table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE subjects
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 7. Enrollments Table
@@ -93,8 +138,18 @@ const migrate = async () => {
                 class_id INTEGER NOT NULL
                     REFERENCES classes(id) ON DELETE CASCADE,
                 enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(student_id, class_id)
             );
+        `);
+
+        // Add updated_at column to enrollments table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE enrollments
+            ADD COLUMN IF NOT EXISTS created_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 8. Attendance Table
@@ -109,8 +164,16 @@ const migrate = async () => {
                 status VARCHAR(20) NOT NULL
                     CHECK (status IN ('present', 'absent', 'late', 'excused')),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(student_id, class_id, attendance_date)
             );
+        `);
+
+        // Add updated_at column to attendance table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE attendance
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 9. Exams Table
@@ -125,8 +188,16 @@ const migrate = async () => {
                 exam_date DATE,
                 total_marks NUMERIC(8,2) NOT NULL
                     CHECK (total_marks > 0),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+        `);
+
+        // Add updated_at column to exams table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE exams
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         // 10. Results Table
@@ -141,8 +212,16 @@ const migrate = async () => {
                     CHECK (marks_obtained >= 0),
                 grade VARCHAR(5),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(exam_id, student_id)
             );
+        `);
+        
+        // Add updated_at column to results table if it doesn't exist
+        await pool.query(`
+            ALTER TABLE results
+            ADD COLUMN IF NOT EXISTS updated_at
+            TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         `);
 
         console.log("All database tables created successfully!");

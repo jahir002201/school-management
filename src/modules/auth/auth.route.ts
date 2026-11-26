@@ -2,12 +2,13 @@ import { Router } from "express";
 
 import { authController } from "./auth.controller.js";
 import { auth } from "../../middleware/auth.js";
+import { authLimiter } from "../../middleware/rateLimiter.js";
 
 const router = Router();
 
-router.post("/register", authController.register);
+router.post("/register", authLimiter, authController.register);
 
-router.post("/login", authController.login);
+router.post("/login", authLimiter, authController.login);
 
 // Protected Route
 router.get("/me", auth(), authController.me);

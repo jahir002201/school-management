@@ -7,9 +7,10 @@ import {
     loginValidation
 } from "./auth.validation.js";
 
+import { sendSuccess } from "../../utils/apiResponse.js";
+
 // Register Controller
 const register = async (req: Request, res: Response) => {
-
     const validation = registerValidation.safeParse(req.body);
 
     if (!validation.success) {
@@ -25,11 +26,12 @@ const register = async (req: Request, res: Response) => {
             validation.data
         );
 
-        return res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            data: result
-        });
+        return sendSuccess(
+            res,
+            result,
+            "User registered successfully",
+            201
+        );
 
     } catch (error) {
         const message = error instanceof Error
@@ -47,10 +49,8 @@ const register = async (req: Request, res: Response) => {
     }
 };
 
-
 // Login Controller
 const login = async (req: Request, res: Response) => {
-
     const validation = loginValidation.safeParse(req.body);
 
     if (!validation.success) {
@@ -66,11 +66,11 @@ const login = async (req: Request, res: Response) => {
             validation.data
         );
 
-        return res.status(200).json({
-            success: true,
-            message: "Login successful",
-            data: result
-        });
+        return sendSuccess(
+            res,
+            result,
+            "Login successful"
+        );
 
     } catch (error) {
         const message = error instanceof Error
@@ -94,17 +94,18 @@ const login = async (req: Request, res: Response) => {
 
 // Get Logged-in User
 const me = async (req: Request, res: Response) => {
-    return res.status(200).json({
-        success: true,
-        message: "User profile fetched successfully",
-        data: {
+    return sendSuccess(
+        res,
+        {
             id: req.user?.id,
             email: req.user?.email,
             role: req.user?.role
-        }
-    });
+        },
+        "User profile fetched successfully"
+    );
 };
 
+// Export Auth Controller
 export const authController = {
     register,
     login,

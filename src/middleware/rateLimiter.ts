@@ -1,0 +1,13 @@
+import rateLimit from "express-rate-limit";
+
+// Authentication Rate Limiter
+export const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 10, // Maximum 10 requests
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: "Too many authentication attempts. Please try again after 15 minutes."
+    }
+});
